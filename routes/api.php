@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\InvestmentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,17 +19,14 @@ use App\Http\Controllers\AuthController;
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
 
-// Protected routes
-Route::middleware(['auth:api', 'role:lender'])->group(function () {
-    // Routes for Lender
-    // Add lender-specific routes here
+// Investment routes for lenders
+Route::middleware(['auth:api', 'checkRole:Lender'])->group(function () {
+    Route::post('invest', [InvestmentController::class, 'invest']);
+    Route::get('investments/total', [InvestmentController::class, 'getTotalInvestments']);
+    Route::get('investments', [InvestmentController::class, 'getInvestments']);
 });
 
-Route::middleware(['auth:api', 'role:borrower'])->group(function () {
-    // Routes for Borrower
-    // Add borrower-specific routes here
-});
-
+// Common routes for all authenticated users
 Route::middleware('auth:api')->group(function () {
     Route::get('profile', [AuthController::class, 'profile']);
     Route::post('logout', [AuthController::class, 'logout']);
